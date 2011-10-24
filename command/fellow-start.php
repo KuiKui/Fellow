@@ -4,6 +4,7 @@ require_once dirname(__FILE__).'/../lib/includes.php';
 $cli = new CLI();
 $git = new Git($cli);
 
+$projectId = $git->getCurrentFellowProjectId();
 $git->getCurrentBranch('master');
 
 if(count($argv) < 2)
@@ -55,6 +56,6 @@ else
 
 $api = new curlConnexion('http://droussel-desktop/crew/');
 $api->setOutput($cli);
-$json = $api->post('startBranch/', array('project' => 2));
+$json = $api->post('startBranch/', array('project' => $projectId));
 $status = json_decode($json, true);
 $cli->custom("<<< API : %s",$status['message']);

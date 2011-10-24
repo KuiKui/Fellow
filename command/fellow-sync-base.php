@@ -5,6 +5,7 @@ require_once dirname(__FILE__).'/../lib/includes.php';
 $cli = new CLI();
 $git = new Git($cli);
 
+$projectId = $git->getCurrentFellowProjectId();
 $featureBranch = $git->getCurrentBranch(null, 'master');
 $git->cmd('git fetch');
 $existsOnRemote = $git->branchExists($featureBranch, true);
@@ -20,6 +21,6 @@ $lastMasterHash = $git->getLastCommitHash('master');
 
 $api = new curlConnexion('http://droussel-desktop/crew/');
 $api->setOutput($cli);
-$json = $api->post('synchronise/', array('project' => 2, 'branch' => $featureBranch, 'commit' => $lastLocalHash));
+$json = $api->post('synchronise/', array('project' => $projectId, 'branch' => $featureBranch, 'commit' => $lastLocalHash));
 $status = json_decode($json, true);
 $cli->custom("<<< API : %s",$status['message']);

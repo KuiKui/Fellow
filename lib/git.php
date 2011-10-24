@@ -90,4 +90,51 @@ class Git
     
     $this->output->error("no last commit on the branch %s [%s]", $branch, ($remote) ? 'remote' : 'local');
   }
+  
+  public function setConfig($name, $value)
+  {
+    $status = $this->cmd('git config %s %s', escapeshellarg($name), escapeshellarg($value));
+    if($status == 0)
+    {
+      $this->output->success('value [%s] set to [%s]', $name, $value);
+    }
+    else
+    {
+      $this->output->error('could not set value [%s] to [%s]', $name, $value);
+    }
+    
+    return ($status == 0);
+  }
+
+  public function getConfig($name)
+  {
+    $results = $this->cmdWithResults('git config --get %s', escapeshellarg($name));
+
+    if(isset($results[1][0]) && count($results[1][0]) > 0)
+    {
+      return $results[1][0];
+    }
+    
+    $this->output->error('could not find git configuration key [%s]', $name);
+  }
+
+  public function removeConfigSection($name)
+  {
+    return ($this->cmd('git config --remove-section %s', escapeshellarg($name)) == 0);
+  }
+
+  public function removeConfig($name)
+  {
+    return ($this->cmd('git config --unset %s', escapeshellarg($name)) == 0);
+  }
+  
+  public function getCurrentFellowProjectId()
+  {
+    $projectId = $this->getConfig('fellow.projectid');
+    if(!is_numeric($projectId) || $projectId == 0)
+    {
+      $this->output->error('wrong project id [%s]', $projectId);
+    }
+    return $projectId;
+  }
 }
