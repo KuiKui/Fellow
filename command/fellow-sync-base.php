@@ -22,6 +22,6 @@ $lastMasterHash = $git->getLastCommitHash('master');
 
 $api = new curlConnexion($config->get('Crew-server-url'));
 $api->setOutput($cli);
-$json = $api->post('synchronise/', array('project' => $projectId, 'branch' => $featureBranch, 'commit' => $lastLocalHash));
+$json = $api->send('synchronise/', array('project' => $projectId, 'branch' => $featureBranch, 'commit' => $lastLocalHash), true);
 $status = json_decode($json, true);
 $cli->custom("<<< API : %s",$status['message']);
