@@ -3,6 +3,7 @@
 require_once dirname(__FILE__).'/../lib/includes.php';
 
 $cli = new CLI();
+$config = new Config(dirname(__FILE__).'/../config/config.yml', $cli);
 $git = new Git($cli);
 
 $projectId = $git->getCurrentFellowProjectId();
@@ -10,7 +11,7 @@ $featureBranch = $git->getCurrentBranch(null, 'master');
 $git->cmd('git fetch');
 $lastLocalHash = $git->getLastCommitHash($featureBranch); 
 
-$api = new curlConnexion('http://droussel-desktop/crew/');
+$api = new curlConnexion($config->get('Crew-server-url'));
 $api->setOutput($cli);
 $json = $api->get('reviewStatus/', array('project' => $projectId,'branch' => $featureBranch, 'commit' => $lastLocalHash));
 $status = json_decode($json, true);

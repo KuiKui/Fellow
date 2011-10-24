@@ -3,6 +3,7 @@
 require_once dirname(__FILE__).'/../lib/includes.php';
 
 $cli = new CLI();
+$config = new Config(dirname(__FILE__).'/../config/config.yml', $cli);
 $git = new Git($cli);
 $git->getCurrentBranch('master');
 
@@ -20,7 +21,7 @@ switch(count($argv))
     break;
 }
 
-$api = new curlConnexion('http://droussel-desktop/crew/');
+$api = new curlConnexion($config->get('Crew-server-url'));
 $api->setOutput($cli);
 $json = $api->post('addProject/', array('name' => $projectName, 'remote' => $remote));
 $status = json_decode($json, true);
