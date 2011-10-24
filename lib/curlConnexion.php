@@ -20,92 +20,49 @@ class curlConnexion
   {
     $this->output = $output;
   }
-  
-  public function get($request, $params = array())
-  {
-    foreach($params as $param)
-    {
-      if(strlen($param) > 0)
-      {
-        $request = preg_replace( '/#\{[\w-]*\}/', $param, $request, 1);
-      }
-    }
-    
-    if(!in_array($this->serviceContentType, array('json', 'xml')))
-    {
-      throw new RuntimeException(sprintf("Content-Type inconnu : %s (%s%s)", $this->serviceContentType, $this->serviceUrl, $request));
-    }
-    
-    if(!is_null($this->output))
-    {
-      $this->output->custom(">>> API : %s%s", $this->serviceUrl, $request);
-    }
-    
-    try
-    {
-      $session = curl_init();
-      curl_setopt($session, CURLOPT_URL, $this->serviceUrl.$request);
-      curl_setopt($session, CURLOPT_TIMEOUT, 5);
-      curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($session, CURLOPT_HEADER, 'Accept: application/'.$this->serviceContentType);
-      curl_setopt($session, CURLOPT_HEADER, 'Content-Type: application/'.$this->serviceContentType);
-      if(!is_null($this->serviceUser) && !is_null($this->servicePassword))
-      {
-        curl_setopt($session, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($session, CURLOPT_USERPWD, $this->serviceUser.':'.$this->servicePassword);
-      }
-      
-      $response = curl_exec($session);
-      if (!$response)
-      {
-        throw new RuntimeException(sprintf("%s (%s%s)", curl_error($session), $this->serviceUrl, $request));
-      }
-      
-      $status = curl_getinfo($session, CURLINFO_HTTP_CODE);
-      curl_close($session);
-      if($status != 200)
-      {
-        throw new RuntimeException(sprintf("Error %d (%s%s)", $status, $this->serviceUrl, $request));
-      }
-    }
-    catch(Exception $e)
-    {
-      throw $e;
-    }
-    
-    return $response;
-  }
-  
-  public function post($ressourceUrl, $params = array())
+
+  public function send($ressourceUrl, $params = array(), $postMethod = false)
   {
     $encoded = '';
     foreach($params as $name => $value) {
       $encoded .= urlencode($name).'='.urlencode($value).'&';
     }
+    $encoded = substr($encoded, 0, strlen($encoded)-1);
 
     if(!in_array($this->serviceContentType, array('json', 'xml')))
     {
       throw new RuntimeException(sprintf("Content-Type inconnu : %s (%s%s)", $this->serviceContentType, $this->serviceUrl, $ressourceUrl));
     }
 
+    if($postMethod)
+    {
+      $url = $this->serviceUrl.$ressourceUrl;
+    }
+    else
+    {
+      $url = $this->serviceUrl.$ressourceUrl.$encoded;
+    }
+    
     if(!is_null($this->output))
     {
-      $this->output->custom(">>> API : %s%s", $this->serviceUrl, $ressourceUrl);
+      $this->output->custom(">>> API : %s", $url);
     }
 
     try
     {
       $session = curl_init();
 
-      curl_setopt($session, CURLOPT_URL, $this->serviceUrl.$ressourceUrl);
+      curl_setopt($session, CURLOPT_URL, $url);
+      if($postMethod)
+      {
+        curl_setopt($session, CURLOPT_POSTFIELDS,  $encoded);
+        curl_setopt($session, CURLOPT_POST, 1);
+      }
       curl_setopt($session, CURLOPT_TIMEOUT, 5);
       curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($session, CURLOPT_HEADER, 'Accept: application/'.$this->serviceContentType);
       curl_setopt($session, CURLOPT_HEADER, 'Content-Type: application/'.$this->serviceContentType);
 
-      $encoded = substr($encoded, 0, strlen($encoded)-1);
-      curl_setopt($session, CURLOPT_POSTFIELDS,  $encoded);
-      curl_setopt($session, CURLOPT_POST, 1);
 
       if(!is_null($this->serviceUser) && !is_null($this->servicePassword))
       {
@@ -116,12 +73,12 @@ class curlConnexion
       $status   = curl_getinfo($session, CURLINFO_HTTP_CODE);
       if (!$response)
       {
-        throw new RuntimeException(sprintf("%s (%s%s)", curl_error($session), $this->serviceUrl, $ressourceUrl));
+        throw new RuntimeException(sprintf("%s (%s)", curl_error($session), $url));
       }
       curl_close($session);
       if($status != 200)
       {
-        throw new RuntimeException(sprintf("Erreur %d (%s%s)", $status, $this->serviceUrl, $ressourceUrl));
+        throw new RuntimeException(sprintf("Erreur %d (%s)", $status, $url));
       }
     }
     catch(Exception $e)
@@ -131,5 +88,4 @@ class curlConnexion
 
     return $response;
   }
-  
 }
