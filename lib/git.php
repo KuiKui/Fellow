@@ -12,6 +12,7 @@ class Git
   public function cmd()
   {
     $cmd = call_user_func_array('sprintf', func_get_args());
+    printf("\033[1;35m%s\033[0m\n", $cmd);
     echo("\033[0;35m");
     system($cmd, $state);
     echo("\033[0m");
