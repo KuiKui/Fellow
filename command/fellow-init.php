@@ -23,10 +23,10 @@ switch(count($argv))
 
 $api = new curlConnexion($config->get('Crew-server-url'));
 $api->setOutput($cli);
-$json = $api->send('addProject?', array('name' => $projectName, 'remote' => $remote));
+$json = $api->send('addProject', array('name' => $projectName, 'remote' => $remote));
 $status = json_decode($json, true);
 $cli->custom("<<< API : %s", $status['message']);
-$status['result'] = 2;
+
 if(!$status['result'])
 {
   $cli->error('wrong project id [%s]', $status['result']);

@@ -13,7 +13,7 @@ $lastLocalHash = $git->getLastCommitHash($featureBranch);
 
 $api = new curlConnexion($config->get('Crew-server-url'));
 $api->setOutput($cli);
-$json = $api->send('reviewStatus/', array('project' => $projectId,'branch' => $featureBranch, 'commit' => $lastLocalHash));
+$json = $api->send('reviewStatus', array('project' => $projectId,'branch' => $featureBranch, 'commit' => $lastLocalHash));
 $status = json_decode($json, true);
 $cli->custom("<<< API : %s",$status['message']);
 

@@ -22,6 +22,6 @@ $lastLocalHash = $git->getLastCommitHash($featureBranch);
 
 $api = new curlConnexion($config->get('Crew-server-url'));
 $api->setOutput($cli);
-$json = $api->send('reviewRequest/', array('project' => $projectId,'branch' => $featureBranch, 'commit' => $lastLocalHash), true);
+$json = $api->send('reviewRequest', array('project' => $projectId,'branch' => $featureBranch, 'commit' => $lastLocalHash), true);
 $status = json_decode($json, true);
 $cli->custom("<<< API : %s",$status['message']);

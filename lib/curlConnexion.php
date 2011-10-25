@@ -40,7 +40,7 @@ class curlConnexion
     }
     else
     {
-      $url = $this->serviceUrl.$ressourceUrl.$encoded;
+      $url = $this->serviceUrl.$ressourceUrl.'?'.$encoded;
     }
     
     if(!is_null($this->output))
