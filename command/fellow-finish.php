@@ -19,11 +19,13 @@ $cli->custom("<<< API : %s",$status['message']);
 
 switch($status['result'])
 {
-  case 1:
+  case 0:
     $cli->error("La revue de code n'est pas encore effectuée");
-  case 3:
-    $cli->error("Le code a été refusé !");
+
   case 2:
+    $cli->error("Le code a été refusé !");
+
+  case 1:
     $lastLocalHash = $git->getLastCommitHash($featureBranch); 
     $lastRemoteHash = $git->getLastCommitHash($featureBranch, true);
     if($lastLocalHash != $lastRemoteHash)
@@ -41,6 +43,7 @@ switch($status['result'])
     $git->cmd('git push origin :%s', $featureBranch);
     $cli->success("Feature %s correctement terminée", $featureBranch);
     break;
+
   default:
     $cli->error("Status de code review inconnu : %s", $status['result']);
 }
