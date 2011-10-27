@@ -18,7 +18,7 @@ if(!$existsOnRemote)
 
 $cli->info("Push de la branch %s local vers le remote\n", $featureBranch);
 $git->cmd('git merge master');
-$lastMasterHash = $git->getLastCommitHash('master');
+$lastLocalHash = $git->getLastCommitHash('master');
 
 $api = new curlConnexion($config->get('Crew-server-url'));
 $api->setOutput($cli);
