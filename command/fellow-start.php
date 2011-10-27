@@ -4,8 +4,9 @@ require_once dirname(__FILE__).'/../lib/includes.php';
 $cli = new CLI();
 $config = new Config(dirname(__FILE__).'/../config/config.yml', $cli);
 $git = new Git($cli);
+$fellow = new Fellow($git, $cli);
 
-$projectId = $git->getCurrentFellowProjectId();
+$projectId = $fellow->getCurrentProjectId();
 $git->getCurrentBranch('master');
 
 if(count($argv) < 2)
@@ -55,8 +56,4 @@ else
   $git->cmd("git push origin %s", $featureBranch);
 }
 
-$api = new curlConnexion($config->get('Crew-server-url'));
-$api->setOutput($cli);
-$json = $api->send('startBranch', array('project' => $projectId), true);
-$status = json_decode($json, true);
-$cli->custom("<<< API : %s",$status['message']);
+$fellow->send($config->get('Crew-server-url'), 'startBranch', array('project' => $projectId));

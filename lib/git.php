@@ -128,14 +128,4 @@ class Git
   {
     return ($this->cmd('git config --unset %s', escapeshellarg($name)) == 0);
   }
-  
-  public function getCurrentFellowProjectId()
-  {
-    $projectId = $this->getConfig('fellow.projectid');
-    if(!is_numeric($projectId) || $projectId == 0)
-    {
-      $this->output->error('wrong project id [%s]', $projectId);
-    }
-    return $projectId;
-  }
 }

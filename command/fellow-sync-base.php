@@ -1,27 +1,19 @@
 <?php
-
 require_once dirname(__FILE__).'/../lib/includes.php';
 
 $cli = new CLI();
 $config = new Config(dirname(__FILE__).'/../config/config.yml', $cli);
 $git = new Git($cli);
+$fellow = new Fellow($git, $cli);
 
-$projectId = $git->getCurrentFellowProjectId();
-$featureBranch = $git->getCurrentBranch(null, 'master');
-$git->cmd('git fetch origin');
-$existsOnRemote = $git->branchExists($featureBranch, true);
+$projectId = $fellow->getCurrentProjectId();
+$featureBranch = $fellow->initCommandOnFeatureBranch();
 
-if(!$existsOnRemote)
-{
-  $cli->error("La branche %s n'existe pas sur le remote", $featureBranch);
-}
-
-$cli->info("Push de la branch %s local vers le remote\n", $featureBranch);
+$git->cmd('git checkout master');
+$git->cmd('git merge origin/master');
+$git->cmd('git checkout %s', $featureBranch);
 $git->cmd('git merge master');
-$lastLocalHash = $git->getLastCommitHash('master');
 
-$api = new curlConnexion($config->get('Crew-server-url'));
-$api->setOutput($cli);
-$json = $api->send('synchronise', array('project' => $projectId, 'branch' => $featureBranch, 'commit' => $lastLocalHash), true);
-$status = json_decode($json, true);
-$cli->custom("<<< API : %s",$status['message']);
+$lastMasterHash = $git->getLastCommitHash('master');
+
+$fellow->send($config->get('Crew-server-url'), 'synchronise', array('project' => $projectId,'branch' => $featureBranch, 'commit' => $lastMasterHash));
