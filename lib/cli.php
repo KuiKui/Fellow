@@ -24,6 +24,6 @@ class CLI
   public function custom()
   {
     $msg = call_user_func_array('sprintf', func_get_args());
-    printf("\033[1;33;1m%s\033[0m\n", $msg);
+    printf("\033[0;0;33m%s\033[0m\n", $msg);
   }
 }

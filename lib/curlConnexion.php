@@ -45,7 +45,7 @@ class curlConnexion
     
     if(!is_null($this->output))
     {
-      $this->output->custom(">>> API : %s", $url);
+      $this->output->custom(">>> API : %s%s [ %s ]", $this->serviceUrl, $ressourceUrl, $this->array_implode($params));
     }
 
     try
@@ -87,5 +87,26 @@ class curlConnexion
     }
 
     return $response;
+  }
+
+  protected function array_implode($array, $glue='=', $separator=', ')
+  {
+    if(!is_array($array))
+    {
+      return $array;
+    }
+
+    $string = array();
+
+    foreach($array as $key => $val)
+    {
+      if(is_array($val))
+      {
+        $val = implode(',', $val);
+      }
+      $string[] = sprintf("%s%s'%s'", $key, $glue, $val);
+    }
+
+    return implode($separator, $string);
   }
 }
