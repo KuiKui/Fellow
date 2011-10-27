@@ -8,7 +8,7 @@ $git = new Git($cli);
 
 $projectId = $git->getCurrentFellowProjectId();
 $featureBranch = $git->getCurrentBranch(null, 'master');
-$git->cmd('git fetch');
+$git->cmd('git fetch origin');
 $lastLocalHash = $git->getLastCommitHash($featureBranch); 
 
 $api = new curlConnexion($config->get('Crew-server-url'));

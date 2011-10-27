@@ -14,7 +14,7 @@ if(count($argv) < 2)
 }
 $featureBranch = $argv[1];
 
-$git->cmd('git fetch');
+$git->cmd('git fetch origin');
 $existsOnLocal = $git->branchExists($featureBranch);
 $existsOnRemote = $git->branchExists($featureBranch, true);
 
