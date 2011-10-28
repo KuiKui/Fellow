@@ -7,15 +7,35 @@ $git = new Git($cli);
 $fellow = new Fellow($git, $cli);
 
 $projectId = $fellow->getCurrentProjectId();
-$git->getCurrentBranch('master');
 
 if(count($argv) < 2)
 {
   $cli->error("new feature name is missing");
 }
 $featureBranch = $argv[1];
+$baseBranch = (count($argv) >= 3) ? $argv[2] : 'master';
 
 $git->cmd('git fetch origin');
+
+$baseBranchExistsOnRemote = $git->branchExists($baseBranch, true);
+if(!$baseBranchExistsOnRemote)
+{
+  $cli->error("Base branch %s doesn't exists on remote");
+}
+$git->setConfig('fellow.base-branch-of-'.$featureBranch, $baseBranch);
+
+$baseBranchExistsOnLocal = $git->branchExists($baseBranch);
+if($baseBranchExistsOnLocal)
+{
+  $git->cmd("git checkout %s", $baseBranch);
+}
+else
+{
+  $git->cmd("git checkout -b %s", $baseBranch);
+}
+$git->cmd("git branch --set-upstream %s origin/%s", $baseBranch, $baseBranch);
+$git->cmd("git merge origin/%s", $baseBranch);
+
 $existsOnLocal = $git->branchExists($featureBranch);
 $existsOnRemote = $git->branchExists($featureBranch, true);
 
@@ -40,7 +60,7 @@ if($existsOnRemote)
   $git->cmd("git merge origin/%s", $featureBranch);
 }
 else
-{  
+{
   if($existsOnLocal)
   {
     $cli->info("La branch %s est déjà présente en local", $featureBranch);

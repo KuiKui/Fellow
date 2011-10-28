@@ -8,6 +8,7 @@ $fellow = new Fellow($git, $cli);
 
 $projectId = $fellow->getCurrentProjectId();
 $featureBranch = $fellow->initCommandOnFeatureBranch();
+$baseBranch = $fellow->getBaseBranch($featureBranch);
 $lastLocalHash = $git->getLastCommitHash($featureBranch); 
 
 $status = $fellow->send($config->get('Crew-server-url'), 'reviewStatus', array('project' => $projectId,'branch' => $featureBranch, 'commit' => $lastLocalHash), false);
@@ -31,13 +32,15 @@ switch($status)
       $cli->info("Les branches %s sont synchronisées : %s", $featureBranch, $lastLocalHash);
     }
 
-    $git->cmd('git checkout master');
-    $git->cmd('git merge origin/master');
+    $git->cmd('git checkout %s', $baseBranch);
+    $git->cmd('git merge origin/%s', $baseBranch);
     $git->cmd('git merge %s', $featureBranch);
     $git->cmd('git push');
 
     $git->cmd("git branch -d %s", $featureBranch);
     $git->cmd('git push origin :%s', $featureBranch);
+
+    $git->removeConfig('fellow.base-branch-of-'.$featureBranch);
     break;
 
   default:

@@ -9,11 +9,27 @@ $fellow = new Fellow($git, $cli);
 $projectId = $fellow->getCurrentProjectId();
 $featureBranch = $fellow->initCommandOnFeatureBranch();
 
-$git->cmd('git checkout master');
-$git->cmd('git merge origin/master');
-$git->cmd('git checkout %s', $featureBranch);
-$git->cmd('git merge master');
+if(count($argv) >= 2)
+{
+  if($argv[1] == 'master')
+  {
+    $baseBranch = $argv[1];
+  }
+  else
+  {
+    $cli->error("'master' expected as first parameter");
+  }
+}
+else
+{
+  $baseBranch = $fellow->getBaseBranch($featureBranch);
+}
 
-$lastMasterHash = $git->getLastCommitHash('master');
+$git->cmd('git checkout %s', $baseBranch);
+$git->cmd('git merge origin/%s', $baseBranch);
+$git->cmd('git checkout %s', $featureBranch);
+$git->cmd('git merge %s', $baseBranch);
+
+$lastMasterHash = $git->getLastCommitHash($baseBranch);
 
 $fellow->send($config->get('Crew-server-url'), 'synchronise', array('project' => $projectId,'branch' => $featureBranch, 'commit' => $lastMasterHash));

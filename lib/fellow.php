@@ -56,6 +56,15 @@ class Fellow
     return $featureBranch;
   }
   
+  public function getBaseBranch($featureBranch)
+  {
+    $baseBranch = $this->getGit()->setConfig('fellow.base-branch-of-'.$featureBranch);
+    if(strlen($baseBranch) == 0)
+    {
+      $this->getOutput()->error("No base branch stored for feature branch %s", $featureBranch);
+    }
+    return $baseBranch;
+  }
   public function send($serviceUrl, $resourceUrl, $params = array(), $post = true)
   {
     $api = new curlConnexion($serviceUrl);
