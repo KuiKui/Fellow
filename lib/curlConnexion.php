@@ -58,7 +58,7 @@ class curlConnexion
         curl_setopt($session, CURLOPT_POSTFIELDS,  $encoded);
         curl_setopt($session, CURLOPT_POST, 1);
       }
-      curl_setopt($session, CURLOPT_TIMEOUT, 5);
+      curl_setopt($session, CURLOPT_TIMEOUT, 900);
       curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($session, CURLOPT_HEADER, 'Accept: application/'.$this->serviceContentType);
       curl_setopt($session, CURLOPT_HEADER, 'Content-Type: application/'.$this->serviceContentType);
