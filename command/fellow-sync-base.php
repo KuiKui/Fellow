@@ -32,4 +32,4 @@ $git->cmd('git merge %s', $baseBranch);
 
 $lastMasterHash = $git->getLastCommitHash($baseBranch);
 
-$fellow->send($config->get('Crew-server-url'), 'synchronise', array('project' => $projectId,'branch' => $featureBranch, 'commit' => $lastMasterHash));
+$fellow->send($config->get('Crew-server-url'), 'synchronize', array('project' => $projectId,'branch' => $featureBranch, 'commit' => $lastMasterHash));

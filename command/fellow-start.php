@@ -75,5 +75,3 @@ else
   $cli->info("On push la branch %s sur le remote", $featureBranch);
   $git->cmd("git push origin %s", $featureBranch);
 }
-
-$fellow->send($config->get('Crew-server-url'), 'startBranch', array('project' => $projectId));
