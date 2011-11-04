@@ -5,7 +5,6 @@ require_once dirname(__FILE__).'/../lib/includes.php';
 $cli = new CLI();
 $config = new Config(dirname(__FILE__).'/../config/config.yml', $cli);
 $git = new Git($cli);
-$fellow = new Fellow($git, $cli);
 
 switch(count($argv))
 {
@@ -21,7 +20,11 @@ switch(count($argv))
     break;
 }
 
-$status = $fellow->send($config->get('Crew-server-url'), 'addProject', array('name' => $projectName, 'remote' => $remote));
+$api = new curlConnexion($config->get('Crew-server-url'));
+$api->setOutput($cli);
+$json = $api->send('addProject', array('name' => $projectName, 'remote' => $remote));
+$status = json_decode($json, true);
+$cli->custom("<<< API : %s", $status['message']);
 
 if(!$status['result'])
 {
